@@ -2,12 +2,12 @@
 
 ## What this is
 
-A Flutter plugin (`liquid_menu/`) presenting native iOS `UIMenu` popups,
+A Flutter plugin (repo root) presenting native iOS `UIMenu` popups,
 with a Flutter `showMenu` fallback on non-iOS and iOS < 17.4. The iOS
 implementation is a thin UIKit wrapper — `MenuSpec` → `UIMenu`, an overlay
 host, and a presenter — all inside the plugin's Swift package.
 
-The plugin's iOS package (`liquid_menu/ios/liquid_menu/`) carries two targets:
+The plugin's iOS package (`ios/liquid_menu/`) carries two targets:
 the bridge (`Sources/liquid_menu/` — channels + wire decoding, the only
 `import Flutter` code) and the core (`Sources/LiquidMenu/` — Flutter-free
 UIKit).
@@ -26,16 +26,15 @@ only exists inside one).
 
 ## Commands
 
-Dart commands run from `liquid_menu/`; the app from `liquid_menu/example/`.
+Dart commands run from the repo root; the app from `example/`.
 
 ```bash
-cd liquid_menu
 flutter analyze
 flutter test
 
 # Swift core tests via the root manifest (auto scheme is named after the
 # package, not a product):
-xcodebuild test -scheme liquid-menu -destination 'platform=iOS Simulator,name=iPhone 17'
+xcodebuild test -scheme liquid_menu-Package -destination 'platform=iOS Simulator,name=iPhone 17'
 
 # On-device e2e (presents a real UIMenu, verifies the event round-trip):
 cd example && flutter test integration_test -d <simulator-id>
