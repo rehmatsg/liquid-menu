@@ -47,7 +47,7 @@ final class LiquidMenuRegion extends StatefulWidget {
     required this.menu,
     required this.child,
     this.trigger = .tap,
-    this.anchor = .tapPoint,
+    this.anchor = .triggerRect,
     this.onSelected,
   }) : builder = null;
 
@@ -75,7 +75,8 @@ final class LiquidMenuRegion extends StatefulWidget {
   /// The opening gesture; null in builder/manual mode.
   final LiquidMenuTrigger? trigger;
 
-  /// Where the menu anchors — at the tap point or the region's rect.
+  /// Where the menu anchors — the region's rect (pulldown, the default) or
+  /// the tap point (context-menu-at-touch).
   final LiquidMenuAnchorMode anchor;
 
   /// Called after the menu closes with the first selected action's `value`

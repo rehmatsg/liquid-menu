@@ -1,5 +1,4 @@
 import Flutter
-import LiquidMenu
 import UIKit
 
 /// Wire decoding for the menu models: the `[String: Any]` method-channel

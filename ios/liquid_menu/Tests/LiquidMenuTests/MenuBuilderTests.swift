@@ -1,7 +1,7 @@
 import UIKit
 import XCTest
 
-@testable import LiquidMenu
+@testable import liquid_menu
 
 /// Builder-level coverage: MenuSpec → UIMenu structure, attributes, options.
 /// Runs without a window — pure model-to-UIKit mapping.

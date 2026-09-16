@@ -3,14 +3,17 @@ import UIKit
 /// Where a presented menu is anchored, in **window coordinates**.
 public enum MenuAnchor: Equatable, Sendable {
   /// Anchor to a rectangle — typically the trigger control's global bounds.
-  /// The system picks the attachment edge and direction, pulldown style.
+  /// The menu hangs off the rect's bottom edge (pulldown style) when the
+  /// rect is in the window's upper half, or off its top edge when lower.
   case rect(CGRect)
 
   /// Anchor at a point — typically the tap location. The attachment view is a
   /// minimal rect centered on the point so the menu tracks the touch itself.
   case point(CGPoint)
 
-  /// The window-space frame the anchor view occupies.
+  /// The window-space frame the anchor view occupies — see
+  /// `MenuPresenter` for how rect anchors become a thin strip offset from
+  /// the trigger, which is what keeps the menu from covering it.
   public var frame: CGRect {
     switch self {
     case .rect(let rect):

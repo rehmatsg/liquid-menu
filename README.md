@@ -49,8 +49,11 @@ LiquidMenuRegion(
 )
 ```
 
-`anchor: .triggerRect` turns the region into a pulldown anchored to its own
-bounds; `trigger: .longPress` switches the gesture.
+`anchor: .triggerRect` (the default) makes the region a pulldown anchored to
+its own bounds — the menu hangs below the trigger (or above it when the
+trigger sits in the window's lower half) with a small gap, never covering it.
+`anchor: .tapPoint` anchors at the touch instead, context-menu-at-touch
+style. `trigger: .longPress` switches the gesture.
 
 Imperative:
 

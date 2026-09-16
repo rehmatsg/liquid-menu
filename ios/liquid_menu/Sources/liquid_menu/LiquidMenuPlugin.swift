@@ -1,5 +1,4 @@
 import Flutter
-import LiquidMenu
 import UIKit
 
 /// Thin bridge between Flutter and the native menu presenter. Decodes

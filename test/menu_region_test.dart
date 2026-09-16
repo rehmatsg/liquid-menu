@@ -20,7 +20,7 @@ void main() {
     LiquidMenuEngine.debugTargetPlatformOverride = null;
   });
 
-  testWidgets('tap trigger presents at the tap point', (t) async {
+  testWidgets('tapPoint anchor mode presents at the tap point', (t) async {
     final menu = LiquidMenu(children: [LiquidMenuAction(title: 'A')]);
     await t.pumpWidget(
       Directionality(
@@ -29,7 +29,11 @@ void main() {
           child: SizedBox(
             width: 200,
             height: 60,
-            child: LiquidMenuRegion(menu: menu, child: const Text('trigger')),
+            child: LiquidMenuRegion(
+              menu: menu,
+              anchor: .tapPoint,
+              child: const Text('trigger'),
+            ),
           ),
         ),
       ),
@@ -47,7 +51,7 @@ void main() {
     expect(anchor['y'], closeTo(center.dy + 5, 1));
   });
 
-  testWidgets('triggerRect anchor mode sends the region bounds', (t) async {
+  testWidgets('default (triggerRect) anchor sends the region bounds', (t) async {
     final menu = LiquidMenu(children: [LiquidMenuAction(title: 'A')]);
     await t.pumpWidget(
       Directionality(
@@ -56,7 +60,6 @@ void main() {
           alignment: .topLeft,
           child: LiquidMenuRegion(
             menu: menu,
-            anchor: .triggerRect,
             child: const SizedBox(
               width: 100,
               height: 40,

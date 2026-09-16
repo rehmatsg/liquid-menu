@@ -3,18 +3,21 @@
 
 import PackageDescription
 
-// The Flutter plugin's iOS package. It carries two modules: the `liquid_menu`
-// bridge (method/event channel plugin and wire decoding) and the `LiquidMenu`
-// core it presents through — menu models, the UIMenu builder, the overlay
-// host and the presenter. The core has no `import Flutter` anywhere, so the
-// repo-root Package.swift can compile and test it without a Flutter app.
+// The plugin's iOS package — a single `liquid_menu` target holding both the
+// bridge (channels + wire decoding, the only `import Flutter` files) and the
+// UIKit core (menu models, UIMenu builder, overlay host, presenter).
+//
+// The library product MUST be named "liquid-menu": the Flutter tool derives
+// the product name it links against by hyphenating the plugin name.
 //
 // Every path this manifest NAMES stays inside the package directory, and that
 // is load-bearing: Flutter resolves a plugin through a symlink in the
 // consuming app (`ios/Flutter/ephemeral/Packages/.packages/<plugin>`), and
 // SwiftPM resolves a manifest's relative paths against that symlink rather
 // than the checkout it points into. A path reaching above this directory
-// would land in the app's ephemeral folder and fail resolution.
+// would land in the app's ephemeral folder and fail resolution — which is
+// also why `../FlutterFramework` works: through the symlink it lands on the
+// sibling `FlutterFramework` package Flutter generates there.
 let package = Package(
     name: "liquid_menu",
     platforms: [
@@ -27,34 +30,23 @@ let package = Package(
         .package(name: "FlutterFramework", path: "../FlutterFramework")
     ],
     targets: [
-        // The UIKit core: menu models, the UIMenu builder, the overlay host and
-        // the presenter. No `import Flutter` anywhere.
         .target(
-            name: "LiquidMenu",
+            name: "liquid_menu",
+            dependencies: [
+                .product(name: "FlutterFramework", package: "FlutterFramework")
+            ],
             resources: [
                 // Ships a privacy manifest declaring no data collection and no
                 // required-reason API usage (it uses only public APIs).
                 .process("PrivacyInfo.xcprivacy")
             ]
         ),
-        .target(
-            name: "liquid_menu",
-            dependencies: [
-                "LiquidMenu",
-                .product(name: "FlutterFramework", package: "FlutterFramework")
-            ],
-            resources: [
-                // The plugin ships a privacy manifest declaring no data collection
-                // and no required-reason API usage (it uses only public APIs).
-                .process("PrivacyInfo.xcprivacy")
-            ]
-        ),
-        // Core unit tests — declared here to keep the package tidy, but only
-        // runnable through the repo-root manifest (this package's
-        // FlutterFramework dependency doesn't resolve outside an app build).
+        // Core unit tests — declared here for tidiness but only runnable
+        // through the repo-root manifest (this package's FlutterFramework
+        // dependency doesn't resolve outside an app build).
         .testTarget(
             name: "LiquidMenuTests",
-            dependencies: ["LiquidMenu"]
+            dependencies: ["liquid_menu"]
         )
     ]
 )

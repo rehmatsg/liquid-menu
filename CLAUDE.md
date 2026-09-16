@@ -7,10 +7,10 @@ with a Flutter `showMenu` fallback on non-iOS and iOS < 17.4. The iOS
 implementation is a thin UIKit wrapper — `MenuSpec` → `UIMenu`, an overlay
 host, and a presenter — all inside the plugin's Swift package.
 
-The plugin's iOS package (`ios/liquid_menu/`) carries two targets:
-the bridge (`Sources/liquid_menu/` — channels + wire decoding, the only
-`import Flutter` code) and the core (`Sources/LiquidMenu/` — Flutter-free
-UIKit).
+The plugin's iOS package (`ios/liquid_menu/`) is a single `liquid_menu`
+target — bridge files (`LiquidMenuPlugin`, `WireModels`, `WireDecoding`)
+are the only ones that `import Flutter`; the core files (menu models,
+builder, overlay host, presenter) are Flutter-free UIKit.
 
 **The plugin's iOS manifest must never name a path above its own directory.**
 Flutter symlinks the package into the consuming app's
@@ -19,10 +19,12 @@ manifest paths against that symlink — a `path:` reaching for the repo root
 lands in the app's ephemeral folder and fails resolution.
 
 The **repo-root `Package.swift` is a test harness, not a product**: it
-re-declares the `LiquidMenu` target (path into the plugin dir) plus the test
-target so the core compiles and tests standalone. The plugin manifest itself
-can't resolve without a Flutter app (its `FlutterFramework` path dependency
-only exists inside one).
+re-declares just the core sources as a `liquid_menu` module (explicit
+`sources:` list — everything except the bridge files) plus the test target,
+so the core compiles and tests standalone. The plugin manifest itself can't
+resolve without a Flutter app (its `FlutterFramework` path dependency only
+exists inside one). When adding a core source file, add it to the root
+manifest's `sources:` list too.
 
 ## Commands
 
@@ -45,7 +47,7 @@ The plugin is SwiftPM-only — consumers need
 
 ## Architecture
 
-- **Core** (`LiquidMenu`, Flutter-free): `MenuModels` (spec/anchor/elements),
+- **Core** (Flutter-free files): `MenuModels` (spec/anchor/elements),
   `MenuBuilder` (`MenuSpec` → `UIMenu`/`UIAction`; contiguous runs between
   dividers/sections become `.displayInline` sections), `MenuOverlayHost`
   (singleton overlay view in the app window), `MenuAnchorControl` (invisible
@@ -53,7 +55,7 @@ The plugin is SwiftPM-only — consumers need
   (one-menu-at-a-time, generation counter, per-presentation state box,
   performPrimaryAction on a deferred runloop tick, 500ms presentation
   watchdog).
-- **Bridge** (`liquid_menu`, the only Flutter-aware target):
+- **Bridge** (the only Flutter-aware files):
   `LiquidMenuPlugin.swift` (method routing on `MainActor`, event channel),
   `WireModels.swift` (`init?(wire:)` decoders → core models),
   `WireDecoding.swift` (NSNumber-aware `[String: Any]` helpers).
@@ -83,4 +85,8 @@ The plugin is SwiftPM-only — consumers need
   crashes (`UITargetedPreview`: view-not-in-window) and must not be revived.
 - The anchor button lives in a non-interactive overlay; `performPrimaryAction`
   is deferred one runloop so the interaction can install.
+- Rect anchors resolve to a 1pt strip offset `rectGap` (6pt) below/above the
+  trigger — `menuAttachmentPoint` alone doesn't stop the menu covering the
+  trigger; the control's frame does. The attachment unit-y picks the side of
+  the strip the menu lands on (bottom → menu below, top → above).
 - iOS < 17.4 reports `nativeMenu: false` and Dart falls back automatically.

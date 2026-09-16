@@ -1,5 +1,5 @@
 import XCTest
-@testable import LiquidMenu
+@testable import liquid_menu
 
 /// End-to-end presentation tests. These are the spike: they prove an invisible
 /// `UIControl` in an overlay view presents a real `UIMenu` via

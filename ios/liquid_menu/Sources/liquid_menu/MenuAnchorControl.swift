@@ -7,8 +7,10 @@ import UIKit
 /// the entire trick: the menu runs the genuine UIKit presentation path,
 /// anchored to this button's frame in the window.
 final class MenuAnchorControl: UIButton {
-  /// Where inside `bounds` the menu attaches; nil defers to the system.
-  var attachmentPoint: CGPoint?
+  /// Where inside `bounds` the menu attaches, in **unit** coordinates —
+  /// (0.5, 0.5) is the center, (0.5, 1.0) is bottom-center. Nil defers to
+  /// the system's choice.
+  var attachmentUnitPoint: CGPoint?
 
   var onWillPresent: (() -> Void)?
   var onWillDismiss: (() -> Void)?
@@ -39,7 +41,13 @@ final class MenuAnchorControl: UIButton {
 
   /// The menu's attachment point inside `bounds`.
   override func menuAttachmentPoint(for configuration: UIContextMenuConfiguration) -> CGPoint {
-    attachmentPoint ?? super.menuAttachmentPoint(for: configuration)
+    if let unit = attachmentUnitPoint {
+      return CGPoint(
+        x: bounds.minX + unit.x * bounds.width,
+        y: bounds.minY + unit.y * bounds.height
+      )
+    }
+    return super.menuAttachmentPoint(for: configuration)
   }
 
   override func contextMenuInteraction(

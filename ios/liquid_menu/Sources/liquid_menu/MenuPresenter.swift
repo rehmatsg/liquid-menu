@@ -65,8 +65,9 @@ public final class MenuPresenter {
     control?.contextMenuInteraction?.dismissMenu()
     control?.removeFromSuperview()
 
-    let control = MenuAnchorControl(frame: anchor.frame)
-    control.attachmentPoint = anchor.attachmentPoint
+    let (controlFrame, attachment) = anchor.resolvedControl(in: host.bounds)
+    let control = MenuAnchorControl(frame: controlFrame)
+    control.attachmentUnitPoint = attachment
     actionHandler = onAction
     control.presentedMenu = MenuBuilder.menu(from: spec, onAction: onAction)
     let state = _Presentation()
@@ -122,13 +123,32 @@ public final class MenuPresenter {
 }
 
 extension MenuAnchor {
-  /// The attachment point inside the anchor view's bounds. A point anchor
-  /// attaches at its own center (the point); a rect anchor defers to the
-  /// system's edge choice.
-  var attachmentPoint: CGPoint? {
+  /// Gap between the trigger's edge and the menu's near edge.
+  private static let rectGap: CGFloat = 6
+
+  /// The invisible anchor control's frame plus the menu's attachment point
+  /// inside it (unit coordinates).
+  ///
+  /// A `.point` anchor is a 1×1 at the touch — the menu's top edge lands on
+  /// the tap. A `.rect` anchor is a 1pt strip offset `rectGap` **below** the
+  /// rect when it sits in the container's upper half, else offset **above**
+  /// it — so the menu hangs off the trigger rather than covering it. The
+  /// attachment point's unit-y picks which side of the strip the menu lands
+  /// on: near the strip's bottom → menu below; near the top → above. (UIKit
+  /// still clamps or scrolls a menu too tall for either side.)
+  func resolvedControl(in container: CGRect) -> (frame: CGRect, attachment: CGPoint) {
     switch self {
-    case .point: return CGPoint(x: 0.5, y: 0.5)
-    case .rect: return nil
+    case .point(let point):
+      return (
+        CGRect(x: point.x - 0.5, y: point.y - 0.5, width: 1, height: 1),
+        CGPoint(x: 0.5, y: 0.5)
+      )
+    case .rect(let rect):
+      let below = rect.midY <= container.midY
+      let strip = below
+        ? CGRect(x: rect.minX, y: rect.maxY + Self.rectGap, width: rect.width, height: 1)
+        : CGRect(x: rect.minX, y: rect.minY - Self.rectGap - 1, width: rect.width, height: 1)
+      return (strip, CGPoint(x: 0.5, y: below ? 1 : 0))
     }
   }
 }
