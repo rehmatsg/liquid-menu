@@ -2,25 +2,27 @@
 
 ## What this is
 
-A monorepo shipping two packages built from one UIKit implementation:
+A Flutter plugin (`liquid_menu/`) presenting native iOS `UIMenu` popups,
+with a Flutter `showMenu` fallback on non-iOS and iOS < 17.4. The iOS
+implementation is a thin UIKit wrapper — `MenuSpec` → `UIMenu`, an overlay
+host, and a presenter — all inside the plugin's Swift package.
 
-- **`LiquidMenu`** — a standalone Swift package for native iOS apps. Sources at
-  `liquid-menu-swift/Sources/LiquidMenu/`; its manifest is the repo-root
-  `Package.swift` (SwiftPM only resolves a git URL whose repo root holds a
-  manifest, so the root one is thin and points at that folder via `path:`).
-- **`liquid_menu`** (`liquid_menu/`) — the Flutter plugin: a Dart facade over
-  the native presenter via method/event channels, with a Flutter `showMenu`
-  fallback on non-iOS and iOS < 17.4. The plugin's Swift package carries two
-  targets: the bridge (`Sources/liquid_menu/`) and the `LiquidMenu` core,
-  reached by a **symlink** at `Sources/LiquidMenu` → the core folder.
+The plugin's iOS package (`liquid_menu/ios/liquid_menu/`) carries two targets:
+the bridge (`Sources/liquid_menu/` — channels + wire decoding, the only
+`import Flutter` code) and the core (`Sources/LiquidMenu/` — Flutter-free
+UIKit).
 
 **The plugin's iOS manifest must never name a path above its own directory.**
 Flutter symlinks the package into the consuming app's
 `ios/Flutter/ephemeral/Packages/.packages/liquid_menu`, and SwiftPM resolves
 manifest paths against that symlink — a `path:` reaching for the repo root
-lands in the app's ephemeral folder and fails resolution. The source symlink
-is safe where a manifest path is not: the filesystem follows it from its own
-real location.
+lands in the app's ephemeral folder and fails resolution.
+
+The **repo-root `Package.swift` is a test harness, not a product**: it
+re-declares the `LiquidMenu` target (path into the plugin dir) plus the test
+target so the core compiles and tests standalone. The plugin manifest itself
+can't resolve without a Flutter app (its `FlutterFramework` path dependency
+only exists inside one).
 
 ## Commands
 
@@ -31,8 +33,8 @@ cd liquid_menu
 flutter analyze
 flutter test
 
-# Swift core (iOS-only; use the root package's auto scheme, named after the
-# package not the product):
+# Swift core tests via the root manifest (auto scheme is named after the
+# package, not a product):
 xcodebuild test -scheme liquid-menu -destination 'platform=iOS Simulator,name=iPhone 17'
 
 # On-device e2e (presents a real UIMenu, verifies the event round-trip):

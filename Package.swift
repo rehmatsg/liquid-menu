@@ -3,28 +3,26 @@
 
 import PackageDescription
 
-// The standalone UIKit package: `LiquidMenu`, native `UIMenu` popups presented
-// at an anchor on an overlay above your app.
+// Test-harness manifest for the `LiquidMenu` core that lives inside the
+// Flutter plugin at `liquid_menu/ios/liquid_menu/Sources/LiquidMenu`.
 //
-// This manifest lives at the REPO ROOT on purpose: SwiftPM can only resolve a
-// git URL whose repository root contains a `Package.swift`, so this is what
-// makes `https://github.com/rehmatsg/liquid-menu.git` installable in Xcode.
-// The manifest is thin — every source file lives under `liquid-menu-swift/`.
-// The Flutter plugin's own package (under `liquid_menu/ios/`) compiles that
-// same folder through a symlink, so the core exists exactly once with no
-// vendored copy to drift.
+// The plugin's own manifest can't be resolved standalone — it depends on the
+// `FlutterFramework` package that only exists inside a Flutter app build — so
+// this root manifest is what runs the core's unit tests:
+//
+//   xcodebuild test -scheme liquid-menu -destination 'platform=iOS Simulator,name=iPhone 17'
+//
+// It deliberately declares no library product: liquid-menu is a Flutter
+// plugin, not a standalone Swift package.
 let package = Package(
     name: "liquid-menu",
     platforms: [
         .iOS("17.0")
     ],
-    products: [
-        .library(name: "LiquidMenu", targets: ["LiquidMenu"])
-    ],
     targets: [
         .target(
             name: "LiquidMenu",
-            path: "liquid-menu-swift/Sources/LiquidMenu",
+            path: "liquid_menu/ios/liquid_menu/Sources/LiquidMenu",
             resources: [
                 // Ships a privacy manifest declaring no data collection and no
                 // required-reason API usage (it uses only public APIs).
@@ -34,7 +32,7 @@ let package = Package(
         .testTarget(
             name: "LiquidMenuTests",
             dependencies: ["LiquidMenu"],
-            path: "liquid-menu-swift/Tests/LiquidMenuTests"
+            path: "liquid_menu/ios/liquid_menu/Tests/LiquidMenuTests"
         )
     ]
 )

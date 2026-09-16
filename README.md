@@ -4,13 +4,7 @@ Native iOS popup menus for Flutter — a real `UIMenu` presented by UIKit,
 anchored at the tap that opened it or to a widget's bounds. Everywhere else,
 it falls back to Flutter's `showMenu` behind the same API.
 
-This repo ships two packages:
-
-- **[`liquid_menu`](liquid_menu/)** — the Flutter plugin. `liquidMenus.show(...)`,
-  `LiquidMenuRegion`, action/submenu/deferred elements.
-- **[`LiquidMenu`](liquid-menu-swift/)** — the standalone Swift core
-  (`MenuSpec` → `UIMenu`, overlay host, presenter). No Flutter imports —
-  usable from a native app.
+The package is [`liquid_menu`](liquid_menu/).
 
 ## Why
 
@@ -97,11 +91,13 @@ context-menu's window, so drive selection with `liquidMenus.debugSelect(id)`
 ## Layout
 
 ```
-Package.swift                     # root manifest for the Swift core
-liquid-menu-swift/                # LiquidMenu core (Flutter-free)
-liquid_menu/                      # the Flutter plugin
+liquid_menu/                      # the Flutter plugin — the whole package
   lib/  test/  example/
-  ios/liquid_menu/                # the bridge package (channels + wire)
-    Sources/liquid_menu/
-    Sources/LiquidMenu -> ../../../../liquid-menu-swift/Sources/LiquidMenu
+  ios/liquid_menu/
+    Package.swift                 # bridge + core targets
+    Sources/liquid_menu/          # method/event channels, wire decoding
+    Sources/LiquidMenu/           # UIKit core — no `import Flutter`
+    Tests/LiquidMenuTests/        # core unit tests
+Package.swift                     # test harness only — runs the Swift tests
+                                  # standalone; not an installable product
 ```
