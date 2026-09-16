@@ -1,0 +1,35 @@
+# Dart / Flutter
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+*.iml
+pubspec.lock
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Xcode / SwiftPM
+.swiftpm/
+DerivedData/
+xcuserdata/
+*.xcworkspace/xcuserdata/
+Pods/
+*.podspec.lock
+
+# Example app build artifacts
+example/build/
+example/ios/Pods/
+example/ios/.symlinks/
+example/ios/Flutter/ephemeral/
+example/ios/Flutter/Flutter.framework
+example/ios/Flutter/Flutter.podspec
+example/ios/Flutter/Generated.xcconfig
+example/ios/Flutter/flutter_export_environment.sh
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/

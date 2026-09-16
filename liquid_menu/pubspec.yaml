@@ -1,0 +1,26 @@
+name: liquid_menu
+description: "Native iOS popup menus for Flutter — real UIMenu presentation anchored at a tap or widget, with a Flutter fallback on other platforms."
+version: 0.1.0
+homepage: https://github.com/rehmatsg/liquid-menu
+repository: https://github.com/rehmatsg/liquid-menu
+
+environment:
+  sdk: ^3.12.2
+  flutter: '>=3.27.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  meta: ^1.15.0
+  plugin_platform_interface: ^2.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  plugin:
+    platforms:
+      ios:
+        pluginClass: LiquidMenuPlugin
